@@ -1,0 +1,5 @@
+{
+  "name": "Google Account Manager",
+  "description": "A dashboard to help you manage a large number of Google accounts from a single, streamlined interface. Add, edit, and view your accounts with ease.",
+  "requestFramePermissions": []
+}
