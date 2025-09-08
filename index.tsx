@@ -1258,6 +1258,12 @@ const AccountModal: React.FC<AccountModalProps> = ({ isOpen, onClose, onSave, ac
         if (!email || !/^\S+@\S+\.\S+$/.test(email)) setError('유효한 이메일을 입력해야 추천받을 수 있습니다.');
         return;
     }
+    
+    if (!process.env.API_KEY) {
+        setError("현재 환경에서는 닉네임 추천 기능을 사용할 수 없습니다.");
+        return;
+    }
+
     setError('');
     setIsSuggesting(true);
     setSuggestions([]);
