@@ -44,41 +44,35 @@ const Header = ({ onAddAccount, onBulkAdd, onProfileSync, sortOption, onSortChan
     
     return e('header', { className: "bg-white dark:bg-gray-700 shadow-md sticky top-0 z-40" },
         e('div', { className: "max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8" },
-            e('div', { className: "py-4 space-y-4" },
-                e('div', { className: "flex flex-wrap items-center justify-between gap-4" },
-                    e('div', { className: "flex items-center gap-2" },
-                        e(GoogleIcon, { className: "h-8 w-8" }),
-                        e('h1', { className: "text-2xl font-bold text-gray-900 dark:text-white" }, "Google Account Manager")
-                    ),
-                    e('div', { className: "flex items-center gap-2" },
-                        e('button', { onClick: onThemeChange, className: "p-2 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500", "aria-label": "Toggle theme" },
-                            theme === 'light' ? e(MoonIcon, { className: "h-6 w-6" }) : e(SunIcon, { className: "h-6 w-6" })
-                        ),
-                        e('input', { type: "file", accept: ".json", onChange: handleFileChange, ref: restoreInputRef, className: "hidden" }),
-                        e('button', { onClick: onBackup, className: actionButtonClasses, title: "Backup Data" }, e(BackupIcon, { className: "h-5 w-5" })),
-                        e('button', { onClick: handleRestoreClick, className: actionButtonClasses, disabled: isRestoring, title: "Restore Data" }, isRestoring ? e(SpinnerIcon, { className: "h-5 w-5" }) : e(RestoreIcon, { className: "h-5 w-5" }))
+            e('div', { className: "flex flex-wrap items-center justify-between gap-4 py-4" },
+                e('div', { className: "flex items-center gap-4 flex-shrink-0" },
+                    e(GoogleIcon, { className: "h-8 w-8" }),
+                    e('h1', { className: "text-2xl font-bold text-gray-900 dark:text-white" }, "Google Account Manager"),
+                    e('button', { onClick: onThemeChange, className: "p-2 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500", "aria-label": "Toggle theme" },
+                        theme === 'light' ? e(MoonIcon, { className: "h-6 w-6" }) : e(SunIcon, { className: "h-6 w-6" })
                     )
                 ),
-                e('div', { className: "flex flex-col md:flex-row md:items-center md:justify-between gap-4" },
-                    e('div', { className: "relative flex-grow" },
+                e('div', { className: "flex flex-wrap items-center justify-end gap-2 w-full md:w-auto" },
+                    e('div', { className: "relative w-full sm:w-auto md:max-w-xs" },
                         e('div', { className: "pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3" }, e(SearchIcon, { className: "h-5 w-5 text-gray-400" })),
                         e('input', { type: "search", placeholder: "이메일 또는 닉네임으로 검색...", value: searchQuery, onChange: (e) => onSearchChange(e.target.value), className: "block w-full rounded-md border-0 py-2 pl-10 pr-3 text-gray-900 dark:text-white ring-1 ring-inset ring-gray-300 dark:ring-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-indigo-600 bg-white dark:bg-gray-800 sm:text-sm sm:leading-6" })
                     ),
-                    e('div', { className: "flex items-center justify-between md:justify-end gap-2 flex-wrap" },
-                        e('div', null, 
-                            e('select', { value: sortOption, onChange: (e) => onSortChange(e.target.value), className: "h-full rounded-md border-0 bg-transparent py-2 pl-2 pr-7 text-gray-500 dark:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 bg-white dark:bg-gray-800" },
-                                e('option', { value: 'email-asc' }, '이메일 오름차순'),
-                                e('option', { value: 'email-desc' }, '이메일 내림차순'),
-                                e('option', { value: 'tistory-enabled' }, '티스토리 연동'),
-                                e('option', { value: 'naver-enabled' }, '네이버 연동'),
-                                e('option', { value: 'blogspot-enabled' }, '블로그스팟 연동'),
-                                e('option', { value: 'wordpress-enabled' }, '워드프레스 연동')
-                            )
-                        ),
-                        e('button', { onClick: onBulkAdd, className: actionButtonClasses }, e(BulkAddIcon, { className: "-ml-0.5 mr-1.5 h-5 w-5" }), "일괄 추가"),
-                        e('button', { onClick: onProfileSync, className: actionButtonClasses }, e(UserGroupIcon, { className: "-ml-0.5 mr-1.5 h-5 w-5" }), "프로필 동기화"),
-                        e('button', { onClick: onAddAccount, className: "inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 transition-colors" }, e(PlusIcon, { className: "-ml-0.5 mr-1.5 h-5 w-5" }), "계정 추가")
-                    )
+                    e('select', { value: sortOption, onChange: (e) => onSortChange(e.target.value), className: "h-full rounded-md border-0 bg-transparent py-2 pl-2 pr-7 text-gray-500 dark:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 bg-white dark:bg-gray-800" },
+                        e('option', { value: 'email-asc' }, '이메일 오름차순'),
+                        e('option', { value: 'email-desc' }, '이메일 내림차순'),
+                        e('option', { value: 'tistory-enabled' }, '티스토리 연동'),
+                        e('option', { value: 'naver-enabled' }, '네이버 연동'),
+                        e('option', { value: 'blogspot-enabled' }, '블로그스팟 연동'),
+                        e('option', { value: 'wordpress-enabled' }, '워드프레스 연동')
+                    ),
+                    e('button', { onClick: onBulkAdd, className: actionButtonClasses }, e(BulkAddIcon, { className: "-ml-0.5 mr-1.5 h-5 w-5" }), "일괄 추가"),
+                    e('button', { onClick: onProfileSync, className: actionButtonClasses }, e(UserGroupIcon, { className: "-ml-0.5 mr-1.5 h-5 w-5" }), "프로필 동기화"),
+                    
+                    e('input', { type: "file", accept: ".json", onChange: handleFileChange, ref: restoreInputRef, className: "hidden" }),
+                    e('button', { onClick: onBackup, className: actionButtonClasses, title: "Backup Data" }, e(BackupIcon, { className: "h-5 w-5" })),
+                    e('button', { onClick: handleRestoreClick, className: actionButtonClasses, disabled: isRestoring, title: "Restore Data" }, isRestoring ? e(SpinnerIcon, { className: "h-5 w-5" }) : e(RestoreIcon, { className: "h-5 w-5" })),
+
+                    e('button', { onClick: onAddAccount, className: "inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 transition-colors" }, e(PlusIcon, { className: "-ml-0.5 mr-1.5 h-5 w-5" }), "계정 추가")
                 )
             )
         )
