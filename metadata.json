@@ -1,0 +1,6 @@
+
+{
+  "name": "Google Account Manager",
+  "description": "An application to manage Google Account information, restored from a backup.",
+  "requestFramePermissions": []
+}
