@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>녹음싱크</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="녹음싱크">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#111214">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="icon" href="icons/icon-192.png">
+<style>
+:root{
+  --bg:#111214;--panel:#1b1d21;--line:#2a2d33;--text:#f2f3f5;--muted:#9aa0aa;
+  --rec:#ff3b30;--ok:#34c759;--warn:#ffb020;--accent:#4c8dff;
+  --radius:16px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--text);
+  font:16px/1.5 -apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+body{min-height:100dvh;padding:calc(env(safe-area-inset-top) + 12px) 16px calc(env(safe-area-inset-bottom) + 24px)}
+main{max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+header{display:flex;align-items:center;justify-content:space-between}
+h1{font-size:20px;margin:0;font-weight:700;letter-spacing:-.02em}
+.sub{color:var(--muted);font-size:13px}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);
+  background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:4px 10px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.dot.ok{background:var(--ok)}.dot.warn{background:var(--warn)}.dot.bad{background:var(--rec)}
+button{font:inherit;color:inherit;border:0;cursor:pointer}
+.icon-btn{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px 12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:14px}
+textarea,input[type=text],input[type=url],input[type=password]{width:100%;font:inherit;color:var(--text);
+  background:#0d0e10;border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+textarea{resize:vertical;min-height:64px}
+label.small{display:block;font-size:13px;color:var(--muted);margin:0 0 6px}
+
+.rec-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;padding:18px 0 6px}
+#recBtn{width:148px;height:148px;border-radius:50%;background:#2a1414;border:4px solid var(--rec);
+  display:flex;align-items:center;justify-content:center;transition:transform .1s}
+#recBtn:active{transform:scale(.97)}
+#recBtn .core{width:96px;height:96px;border-radius:50%;background:var(--rec);transition:all .2s}
+#recBtn.on .core{width:56px;height:56px;border-radius:12px}
+#recBtn.on{animation:pulse 1.6s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,59,48,.45)}70%{box-shadow:0 0 0 22px rgba(255,59,48,0)}100%{box-shadow:0 0 0 0 rgba(255,59,48,0)}}
+#timer{font-size:34px;font-variant-numeric:tabular-nums;font-weight:600;letter-spacing:.02em}
+#recHint{color:var(--muted);font-size:14px;text-align:center}
+
+#live{min-height:72px;max-height:220px;overflow:auto;white-space:pre-wrap;font-size:15px}
+#live .interim{color:var(--muted)}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.switch{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--muted)}
+.switch input{width:20px;height:20px}
+
+.photos{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px}
+.photos img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;display:block}
+.btn{border-radius:12px;padding:12px 14px;font-weight:600}
+.btn.primary{background:var(--accent);color:#fff}
+.btn.ghost{background:transparent;border:1px solid var(--line)}
+.btn.full{width:100%}
+.btn:disabled{opacity:.4}
+
+.list{display:flex;flex-direction:column;gap:8px}
+.item{display:flex;justify-content:space-between;gap:10px;font-size:14px;padding:10px 0;border-top:1px solid var(--line)}
+.item:first-child{border-top:0}
+.item .t{color:var(--muted);font-size:12px}
+.item .memo{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:64vw}
+.state{font-size:12px;white-space:nowrap}
+.state.done{color:var(--ok)}.state.wait{color:var(--warn)}
+
+#settings{display:none}
+body.show-settings #settings{display:block}
+.msg{font-size:14px;margin-top:8px}
+.msg.bad{color:var(--rec)}.msg.ok{color:var(--ok)}
+.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 20px);transform:translateX(-50%);
+  background:#2b2e35;color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;max-width:90vw}
+.toast.show{opacity:1}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div>
+      <h1>녹음싱크</h1>
+      <div class="sub">Rec Sync · 말하면 구글 시트로</div>
+    </div>
+    <div class="row">
+      <span class="pill" id="syncPill"><span class="dot" id="syncDot"></span><span id="syncText">설정 필요</span></span>
+      <button class="icon-btn" id="settingsBtn" aria-label="설정">⚙︎</button>
+    </div>
+  </header>
+
+  <section class="card" id="settings">
+    <label class="small" for="urlInput">저장 주소 (Apps Script 웹 앱 URL)</label>
+    <input type="url" id="urlInput" placeholder="https://script.google.com/macros/s/.../exec" autocomplete="off">
+    <div style="height:10px"></div>
+    <label class="small" for="tokenInput">토큰</label>
+    <input type="password" id="tokenInput" placeholder="setup 실행 로그에 나온 토큰" autocomplete="off">
+    <div style="height:12px"></div>
+    <div class="row">
+      <button class="btn primary" id="saveSettings">저장하고 연결 확인</button>
+      <button class="btn ghost" id="closeSettings">닫기</button>
+    </div>
+    <div class="msg" id="settingsMsg"></div>
+  </section>
+
+  <section class="card">
+    <label class="small" for="memo">장소 / 메모 (선택)</label>
+    <textarea id="memo" rows="2" placeholder="예) 나카메구로 스타벅스 리저브 로스터리, 와이프와 샵 이야기"></textarea>
+    <div class="row" style="margin-top:10px;justify-content:space-between">
+      <label class="btn ghost" for="photoInput" style="cursor:pointer">📷 사진 추가</label>
+      <input type="file" id="photoInput" accept="image/*" multiple class="hidden">
+      <span class="sub" id="photoCount"></span>
+    </div>
+    <div class="photos" id="photos"></div>
+  </section>
+
+  <section class="rec-wrap">
+    <button id="recBtn" aria-label="녹음 시작"><span class="core"></span></button>
+    <div id="timer">00:00</div>
+    <div id="recHint">누르면 녹음 시작 · 다시 누르면 끝내고 자동 저장</div>
+  </section>
+
+  <section class="card">
+    <div class="row" style="justify-content:space-between;margin-bottom:8px">
+      <span class="small sub">실시간 글자 변환</span>
+      <label class="switch"><input type="checkbox" id="liveToggle" checked>켜기</label>
+    </div>
+    <div id="live" class="sub">녹음을 시작하면 여기에 말한 내용이 글자로 나타나요.</div>
+  </section>
+
+  <button class="btn ghost full hidden" id="saveNoRec">녹음 없이 메모·사진만 저장</button>
+
+  <section class="card">
+    <div class="row" style="justify-content:space-between">
+      <span class="small sub">최근 기록</span>
+      <span class="sub" id="queueInfo"></span>
+    </div>
+    <div class="list" id="history"></div>
+  </section>
+</main>
+<div class="toast" id="toast"></div>
+<script src="app.js"></script>
+</body>
+</html>
