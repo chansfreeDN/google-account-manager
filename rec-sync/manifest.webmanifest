@@ -1,7 +1,7 @@
 {
-  "name": "녹음싱크 (Rec Sync)",
-  "short_name": "녹음싱크",
-  "description": "녹음하면 구글 드라이브·시트로 자동 저장",
+  "name": "SnapVoice",
+  "short_name": "SnapVoice",
+  "description": "사진·녹음을 구글 드라이브·시트로 자동 저장",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

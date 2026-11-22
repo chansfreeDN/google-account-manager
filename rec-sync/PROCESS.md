@@ -1,7 +1,7 @@
 # rec-sync 정리 지침 (Claude용)
 
-녹음싱크 앱이 쌓은 기록을 Claude가 정리할 때 따르는 지침입니다.
-Claude 앱에서 "녹음싱크 정리해줘"라고 하거나, 예약 작업이 이 지침대로 실행합니다.
+SnapVoice 앱이 쌓은 기록을 Claude가 정리할 때 따르는 지침입니다.
+Claude 앱에서 "SnapVoice 정리해줘"라고 하거나, 예약 작업이 이 지침대로 실행합니다.
 
 ## 위치
 - 시트: `Claude Apps/rec-sync/rec-sync 기록`

@@ -1,4 +1,4 @@
-/* 녹음싱크 (rec-sync)
+/* SnapVoice (폴더·저장소 이름: rec-sync)
  * 녹음 → 구글 드라이브/시트 자동 저장. 인터넷이 끊겨도 휴대폰에 보관했다가 다시 연결되면 보냄.
  */
 (() => {
@@ -199,7 +199,7 @@
       const row = document.createElement('div'); row.className = 'item';
       const left = document.createElement('div');
       const m = document.createElement('div'); m.className = 'memo';
-      m.textContent = e.memo || e.preview || (e.dur ? '녹음' : '메모');
+      m.textContent = e.memo || e.preview || (e.dur ? '녹음' : e.photos ? `사진 ${e.photos}장` : '메모');
       const t = document.createElement('div'); t.className = 't';
       t.textContent = new Date(e.at).toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }) +
         (e.dur ? ` · ${fmt(e.dur)}` : '') + (e.photos ? ` · 사진 ${e.photos}` : '');
@@ -412,7 +412,7 @@
     try {
       await api({ action: 'ping' });
       fatalError = '';
-      ui.settingsMsg.textContent = '연결됐어요. 이제 녹음하면 시트로 저장돼요.'; ui.settingsMsg.className = 'msg ok';
+      ui.settingsMsg.textContent = '연결됐어요. 이제 저장하면 시트로 올라가요.'; ui.settingsMsg.className = 'msg ok';
       pump();
     } catch (e) {
       ui.settingsMsg.className = 'msg bad';

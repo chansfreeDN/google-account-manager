@@ -1,5 +1,5 @@
 // 앱 화면 파일을 보관해 두었다가 인터넷이 없어도 열리게 함 (데이터 전송은 건드리지 않음)
-const CACHE = 'rec-sync-v1';
+const CACHE = 'snapvoice-v2';
 const SHELL = ['./', 'index.html', 'app.js', 'manifest.webmanifest', 'icons/icon-180.png', 'icons/icon-192.png'];
 self.addEventListener('install', (e) => { e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', (e) => {

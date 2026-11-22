@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>녹음싱크</title>
+<title>SnapVoice</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="녹음싱크">
+<meta name="apple-mobile-web-app-title" content="SnapVoice">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#111214">
 <link rel="manifest" href="manifest.webmanifest">
@@ -88,8 +88,8 @@ body.show-settings #settings{display:block}
 <main>
   <header>
     <div>
-      <h1>녹음싱크</h1>
-      <div class="sub">Rec Sync · 말하면 구글 시트로</div>
+      <h1>SnapVoice</h1>
+      <div class="sub">찍고 말하면 구글 시트로</div>
     </div>
     <div class="row">
       <span class="pill" id="syncPill"><span class="dot" id="syncDot"></span><span id="syncText">설정 필요</span></span>
@@ -122,6 +122,8 @@ body.show-settings #settings{display:block}
     <div class="photos" id="photos"></div>
   </section>
 
+  <button class="btn primary full hidden" id="saveNoRec">녹음 없이 사진·메모만 저장</button>
+
   <section class="rec-wrap">
     <button id="recBtn" aria-label="녹음 시작"><span class="core"></span></button>
     <div id="timer">00:00</div>
@@ -135,8 +137,6 @@ body.show-settings #settings{display:block}
     </div>
     <div id="live" class="sub">녹음을 시작하면 여기에 말한 내용이 글자로 나타나요.</div>
   </section>
-
-  <button class="btn ghost full hidden" id="saveNoRec">녹음 없이 메모·사진만 저장</button>
 
   <section class="card">
     <div class="row" style="justify-content:space-between">
