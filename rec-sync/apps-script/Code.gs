@@ -62,6 +62,8 @@ function doPost(e) {
         return json_(upload_(body));
       case 'finish':
         return json_(finish_(body));
+      case 'setStatus':
+        return json_(setStatus_(body));
       default:
         return json_({ ok: false, error: 'unknown_action' });
     }
@@ -113,11 +115,26 @@ function finish_(b) {
       audio.join('\n'),
       photos.join('\n'),
       status,
+      String(b.location || ''),
     ]);
     return { ok: true, audioCount: audio.length, photoCount: photos.length };
   } finally {
     lock.releaseLock();
   }
+}
+
+/** 앱의 "블로그 글로 쓰기" 버튼: 해당 기록의 처리상태(H열)를 바꿈 */
+function setStatus_(b) {
+  const allowed = ['글쓰기요청'];
+  if (allowed.indexOf(b.status) === -1) return { ok: false, error: 'bad_status' };
+  const sheet = SpreadsheetApp.openById(CONFIG.SHEET_ID).getSheetByName(CONFIG.INBOX_SHEET);
+  const last = sheet.getLastRow();
+  if (last < 2) return { ok: false, error: 'not_found' };
+  const ids = sheet.getRange(2, 1, last - 1, 1).getValues().map(function (r) { return String(r[0]); });
+  const i = ids.indexOf(String(b.sessionId));
+  if (i === -1) return { ok: false, error: 'not_found' };
+  sheet.getRange(i + 2, 8).setValue(b.status);
+  return { ok: true };
 }
 
 function linksFor_(folderId, id) {

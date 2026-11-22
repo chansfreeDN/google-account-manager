@@ -6,7 +6,6 @@
 
   const SEGMENT_MS = 10 * 60 * 1000; // 10분마다 녹음 파일을 나눠서 바로 업로드 (긴 대화도 안전)
   const AUDIO_BITRATE = 32000;
-  const PHOTO_MAX = 2000;
   const HISTORY_MAX = 30;
 
   const $ = (id) => document.getElementById(id);
@@ -116,7 +115,10 @@
             await api({ action: 'upload', kind: it.kind, name: it.name, mime: it.mime, data: await blobToBase64(it.blob) });
           } else if (it.type === 'finish') {
             await api({ action: 'finish', ...it.payload });
-            markHistory(it.payload.sessionId, 'done');
+            markHistory(it.payload.sessionId, { state: 'done' });
+          } else if (it.type === 'status') {
+            await api({ action: 'setStatus', sessionId: it.sessionId, status: it.status });
+            markHistory(it.sessionId, { blog: 'sent' });
           }
           await qDel(it.qid);
           fatalError = ''; backoff = 0;
@@ -155,8 +157,23 @@
       Math.random().toString(36).slice(2, 6);
   }
   function ensureSession() {
-    if (!session) session = { id: newId(), startedAt: Date.now(), photoN: 0, recN: 0 };
+    if (!session) {
+      session = { id: newId(), startedAt: Date.now(), photoN: 0, recN: 0, loc: '' };
+      session.locPromise = getLocation().then((l) => { if (session && l) session.loc = l; return l; });
+    }
     return session;
+  }
+
+  // 휴대폰 위치 (허용 안 하거나 못 받으면 빈칸)
+  function getLocation() {
+    if (!navigator.geolocation) return Promise.resolve('');
+    return new Promise((resolve) => {
+      navigator.geolocation.getCurrentPosition(
+        (p) => resolve(`${p.coords.latitude.toFixed(6)},${p.coords.longitude.toFixed(6)} (±${Math.round(p.coords.accuracy)}m)`),
+        () => resolve(''),
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 },
+      );
+    });
   }
 
   function addHistory(entry) {
@@ -165,10 +182,16 @@
     ls.set('history', h.slice(0, HISTORY_MAX));
     renderHistory();
   }
-  function markHistory(id, state) {
+  function markHistory(id, patch) {
     const h = ls.get('history', []);
     const e = h.find((x) => x.id === id);
-    if (e) { e.state = state; ls.set('history', h); renderHistory(); }
+    if (e) { Object.assign(e, patch); ls.set('history', h); renderHistory(); }
+  }
+  async function requestBlog(id) {
+    markHistory(id, { blog: 'queued' });
+    await qAdd({ type: 'status', sessionId: id, status: '글쓰기요청' });
+    toast('블로그 글쓰기 요청을 보냈어요');
+    pump();
   }
   function renderHistory() {
     const h = ls.get('history', []);
@@ -181,26 +204,26 @@
       t.textContent = new Date(e.at).toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }) +
         (e.dur ? ` · ${fmt(e.dur)}` : '') + (e.photos ? ` · 사진 ${e.photos}` : '');
       left.append(m, t);
+      const right = document.createElement('div'); right.className = 'right';
       const s = document.createElement('div');
       s.className = 'state ' + (e.state === 'done' ? 'done' : 'wait');
       s.textContent = e.state === 'done' ? '시트 저장됨' : '전송 대기';
-      row.append(left, s);
+      const b = document.createElement('button'); b.className = 'blog-btn';
+      b.textContent = e.blog === 'sent' ? '글쓰기 요청됨' : e.blog === 'queued' ? '요청 보내는 중' : '블로그 글로 쓰기';
+      b.disabled = !!e.blog;
+      b.addEventListener('click', () => requestBlog(e.id));
+      right.append(s, b);
+      row.append(left, right);
       return row;
     }) : [Object.assign(document.createElement('div'), { className: 'sub', textContent: '아직 기록이 없어요.' })]));
   }
 
   // ---------- 사진 ----------
-  async function resizePhoto(file) {
-    try {
-      const bmp = await createImageBitmap(file, { imageOrientation: 'from-image' });
-      const scale = Math.min(1, PHOTO_MAX / Math.max(bmp.width, bmp.height));
-      const c = document.createElement('canvas');
-      c.width = Math.round(bmp.width * scale); c.height = Math.round(bmp.height * scale);
-      c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
-      return await new Promise((r) => c.toBlob(r, 'image/jpeg', 0.85));
-    } catch {
-      return file; // 변환 실패 시 원본 그대로
-    }
+  // 사진은 다시 압축하지 않고 원본 파일 그대로 올림 (촬영 위치·시간 정보 유지)
+  function photoExt(file) {
+    const fromName = (file.name.match(/\.([a-z0-9]{2,5})$/i) || [])[1];
+    if (fromName) return fromName.toLowerCase();
+    return ({ 'image/jpeg': 'jpg', 'image/heic': 'heic', 'image/heif': 'heif', 'image/png': 'png', 'image/webp': 'webp' })[file.type] || 'jpg';
   }
   ui.photoInput.addEventListener('change', async () => {
     const files = [...ui.photoInput.files];
@@ -208,10 +231,11 @@
     if (!files.length) return;
     const s = ensureSession();
     for (const f of files) {
-      const blob = await resizePhoto(f);
       s.photoN += 1;
-      const name = `${s.id}_photo${String(s.photoN).padStart(2, '0')}.jpg`;
-      await qAdd({ type: 'upload', kind: 'photo', name, mime: 'image/jpeg', blob });
+      const name = `${s.id}_photo${String(s.photoN).padStart(2, '0')}.${photoExt(f)}`;
+      // File을 그대로 Blob으로 복사해 보관 (바이트 변경 없음)
+      const blob = new Blob([await f.arrayBuffer()], { type: f.type || 'image/jpeg' });
+      await qAdd({ type: 'upload', kind: 'photo', name, mime: blob.type, blob });
       const img = document.createElement('img');
       img.src = URL.createObjectURL(blob);
       ui.photos.append(img);
@@ -299,7 +323,9 @@
     session = null;
     const transcript = liveText.trim();
     const memo = ui.memo.value.trim();
-    await qAdd({ type: 'finish', payload: { sessionId: s.id, startedAt: s.startedAt, durationSec: dur || 0, memo, transcript } });
+    // 위치를 아직 못 받았으면 최대 5초만 기다림
+    const location = s.loc || await Promise.race([s.locPromise, new Promise((r) => setTimeout(() => r(''), 5000))]) || '';
+    await qAdd({ type: 'finish', payload: { sessionId: s.id, startedAt: s.startedAt, durationSec: dur || 0, memo, transcript, location } });
     addHistory({ id: s.id, at: s.startedAt, memo, preview: transcript.slice(0, 40), dur: dur || 0, photos: s.photoN, state: 'wait' });
     ui.memo.value = ''; ui.photos.replaceChildren(); ui.photoCount.textContent = '';
     liveText = ''; ui.timer.textContent = '00:00';
