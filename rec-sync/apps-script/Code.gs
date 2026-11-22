@@ -1,5 +1,5 @@
 /**
- * rec-sync 저장 담당 (Google Apps Script)
+ * SnapVoice 저장 담당 (Google Apps Script)
  *
  * SnapVoice 앱이 보낸 녹음·사진·텍스트를 내 구글 드라이브와 시트에 저장합니다.
  *
@@ -17,10 +17,10 @@
  */
 
 const CONFIG = {
-  SHEET_ID: '1zbhQUbSrJMOqTy2WgfI1yYrPkeTotiRSSO3foPH6RF0', // rec-sync 기록
+  SHEET_ID: '1zbhQUbSrJMOqTy2WgfI1yYrPkeTotiRSSO3foPH6RF0', // Claude Apps/SnapVoice/SnapVoice 기록
   INBOX_SHEET: '수신함',
-  AUDIO_FOLDER_ID: '1arb6epjjMmYuvI3kjZzieETP3KiyzLbs', // rec-sync/녹음파일
-  PHOTO_FOLDER_ID: '1GX42AfJVHkVpdfrdLX-drJvrH2tJNDs_', // rec-sync/사진
+  AUDIO_FOLDER_ID: '1arb6epjjMmYuvI3kjZzieETP3KiyzLbs', // Claude Apps/SnapVoice/녹음파일
+  PHOTO_FOLDER_ID: '1GX42AfJVHkVpdfrdLX-drJvrH2tJNDs_', // Claude Apps/SnapVoice/사진
 };
 
 /** 처음 한 번 실행: 토큰을 만들고 권한을 허용받습니다. */

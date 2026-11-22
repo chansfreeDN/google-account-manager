@@ -1,10 +1,10 @@
-# rec-sync 정리 지침 (Claude용)
+# SnapVoice 정리 지침 (Claude용)
 
 SnapVoice 앱이 쌓은 기록을 Claude가 정리할 때 따르는 지침입니다.
 Claude 앱에서 "SnapVoice 정리해줘"라고 하거나, 예약 작업이 이 지침대로 실행합니다.
 
 ## 위치
-- 시트: `Claude Apps/rec-sync/rec-sync 기록`
+- 시트: `Claude Apps/SnapVoice/SnapVoice 기록`
   (ID `1zbhQUbSrJMOqTy2WgfI1yYrPkeTotiRSSO3foPH6RF0`)
 - 탭
   - `수신함`: 앱이 자동으로 쌓는 곳. A ID, B 녹음일시, C 길이(초), D 장소/메모, E 녹음 텍스트, F 녹음파일 링크, G 사진 링크, H 처리상태
@@ -22,7 +22,7 @@ Claude 앱에서 "SnapVoice 정리해줘"라고 하거나, 예약 작업이 이 
      E 요약, F 할 일(있으면 줄바꿈 목록), G 활용(블로그/인스타/릴스/보관 중 해당), H 초안 링크
    - 한 녹음에 주제가 여러 개면 주제마다 따로 한 줄씩 쓴다.
    - 말한 사람의 생각·결정·숫자(가격, 날짜, 수량)는 빠짐없이 남긴다. 추측으로 채우지 않는다.
-4. 활용이 블로그/인스타면 초안을 Google Docs로 `Claude Apps/rec-sync/초안` 폴더에 만들고 H에 링크.
+4. 활용이 블로그/인스타면 초안을 Google Docs로 `Claude Apps/SnapVoice/초안` 폴더에 만들고 H에 링크.
    - 여행 기록은 한국 독자에게 도움이 되게: 장소, 주문한 것, 가격(원화 환산 병기), 팁.
    - 장소는 메모와 I열 위치(위도·경도), 사진의 촬영 위치·시간 정보로 확인한다.
    - **초안까지만.** 발행·게시는 사용자가 확인한 뒤에만 한다.

@@ -12,10 +12,10 @@
 
 ## 저장 위치 (구글 드라이브)
 ```
-Claude Apps/rec-sync/
+Claude Apps/SnapVoice/
 ├── 녹음파일/          원본 음성 (10분 단위로 나눠 저장)
 ├── 사진/
-└── rec-sync 기록      수신함 · 분류결과 · 분류기준 탭
+└── SnapVoice 기록     수신함 · 분류결과 · 분류기준 탭
 ```
 
 ## 동작
